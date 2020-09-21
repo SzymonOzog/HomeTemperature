@@ -129,14 +129,10 @@ void loop()
 
     // read the packet into packetBufffer
     int len = UDP.read(packetBuffer, 255);
-//    if (len > 0) {
-//      packetBuffer[len] = 0;
-//    }
+
     Serial.println("Contents:");
     Serial.println(packetBuffer);
-        Serial.println("Contentss:");
-    Serial.println(temperatureCheckCode);
-//    Serial.println(packetBuffer==temperatureCheckCode);
+    
     String recievedMessage = packetBuffer;
     if(recievedMessage==temperatureCheckCode)
       dtostrf(temperature, 6, 2, ReplyBuffer); //puts the temperature in the ReplyBuffer
