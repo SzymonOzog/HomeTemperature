@@ -12,6 +12,8 @@ unsigned int localPort = 2390;      // local port to listen on
 char packetBuffer[256]; //buffer to hold incoming packet
 char ReplyBuffer[] = "Acknowleged";
 String temperatureCheckCode = "GetTemperature";
+String lightSwitchCode = "Light";
+bool light = false;
 WiFiUDP UDP;
 
 
@@ -135,10 +137,16 @@ void loop()
         Serial.println("Contentss:");
     Serial.println(temperatureCheckCode);
 //    Serial.println(packetBuffer==temperatureCheckCode);
-    //puts the temperature in the ReplyBuffer
     String recievedMessage = packetBuffer;
     if(recievedMessage==temperatureCheckCode)
-      dtostrf(temperature, 6, 2, ReplyBuffer);
+      dtostrf(temperature, 6, 2, ReplyBuffer); //puts the temperature in the ReplyBuffer
+    if(recievedMessage==lightSwitchCode) // change the light settings
+    {
+      light = !light;
+      Serial.println(light);
+      Serial.println((PinStatus)light);
+    }
+    digitalWrite(9, (PinStatus) light); //turn light on/off
     // send a reply, to the IP address and port that sent us the packet we received
     UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
     UDP.write(ReplyBuffer);
