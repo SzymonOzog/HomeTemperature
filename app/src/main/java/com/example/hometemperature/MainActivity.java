@@ -18,7 +18,7 @@ import java.net.SocketException;
 public class MainActivity extends AppCompatActivity {
 
     TextView temperatureTV;
-    Button checkTemperatureBtn;
+    Button checkTemperatureBtn, lightBtn;
     public static int port = 2390;
     public static String ipAddress = "192.168.0.13";
 
@@ -28,22 +28,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         temperatureTV = findViewById((R.id.temperatureTV));
         checkTemperatureBtn = findViewById((R.id.checkTempBtn));
-
+        lightBtn = findViewById((R.id.turnLightBtn));
         checkTemperatureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Thread(new ClientSend()).start();
+                new Thread(new ClientSend("GetTemperature")).start();
                 ClientListen listener = new ClientListen();
                 new Thread(listener).start();
             }
         });
-    }
-
-    public void setTemperatureTV(String temperature) {
-        temperatureTV.setText(temperature);
+        lightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread(new ClientSend("Light")).start();
+            }
+        });
     }
 
     class ClientSend implements Runnable {
+        String textToSend = "";
+        ClientSend(String _textToSend){
+            textToSend = _textToSend;
+        }
         @Override
         public void run() {
             try {
@@ -51,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 udpSocket.setReuseAddress(true);
                 udpSocket.bind(new InetSocketAddress(MainActivity.port));
                 InetAddress serverAddress = InetAddress.getByName(MainActivity.ipAddress);
-                byte[] buf =("GetTemperature").getBytes();
+                byte[] buf = textToSend.getBytes();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, serverAddress, MainActivity.port);
                 udpSocket.send(packet);
             } catch (SocketException e) {

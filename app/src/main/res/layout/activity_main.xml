@@ -30,5 +30,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Check temperature" />
+            <Button
+                android:id="@+id/turnLightBtn"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Turn light on/off" />
         </TableRow>
     </TableLayout>
