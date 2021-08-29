@@ -3,8 +3,8 @@
 #include "DHT.h"
 #include "WiFiNINA.h"
 DHT dht;
-char ssid[] = "YourWiFiName";
-char pass[] = "YourWiFiPassword";
+char ssid[] = "Odbiornik5GPelnaMoc";
+char pass[] = "sarcofago";
 int status = WL_IDLE_STATUS;
 
 unsigned int localPort = 2390;      // local port to listen on

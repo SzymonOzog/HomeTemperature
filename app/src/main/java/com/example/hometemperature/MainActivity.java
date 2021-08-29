@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -17,49 +18,55 @@ import java.net.SocketException;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView temperatureTV;
-    Button checkTemperatureBtn, lightBtn;
-    public static int port = 2390;
+    EditText portET, ipET;
+    TextView replyTV;
+    Button sendData;
+    public static int port = 8888;
     public static String ipAddress = "192.168.0.13";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        temperatureTV = findViewById((R.id.temperatureTV));
-        checkTemperatureBtn = findViewById((R.id.checkTempBtn));
-        lightBtn = findViewById((R.id.turnLightBtn));
-        checkTemperatureBtn.setOnClickListener(new View.OnClickListener() {
+
+        portET = findViewById((R.id.server_port));
+        ipET = findViewById((R.id.server_ip));
+        portET.setText("Enter port");
+        ipET.setText("Enter IP");
+        replyTV = findViewById((R.id.Reply));
+        sendData = findViewById((R.id.SendData));
+        sendData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Thread(new ClientSend("GetTemperature")).start();
-                ClientListen listener = new ClientListen();
+                int port = Integer.parseInt(portET.getText().toString());
+                String IP = ipET.getText().toString();
+                new Thread(new ClientSend("Check Temperature", port, IP)).start();
+                ClientListen listener = new ClientListen(port);
                 new Thread(listener).start();
-            }
-        });
-        lightBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread(new ClientSend("Light")).start();
             }
         });
     }
 
     class ClientSend implements Runnable {
         String textToSend = "";
-        ClientSend(String _textToSend){
+        int port = 0;
+        String IP = "";
+        ClientSend(String _textToSend, int _port, String _IP){
             textToSend = _textToSend;
+            port = _port;
+            IP = _IP;
         }
         @Override
         public void run() {
             try {
                 DatagramSocket udpSocket = new DatagramSocket(null);
                 udpSocket.setReuseAddress(true);
-                udpSocket.bind(new InetSocketAddress(MainActivity.port));
-                InetAddress serverAddress = InetAddress.getByName(MainActivity.ipAddress);
+                udpSocket.bind(new InetSocketAddress(port));
+                InetAddress serverAddress = InetAddress.getByName(IP);
                 byte[] buf = textToSend.getBytes();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, serverAddress, MainActivity.port);
                 udpSocket.send(packet);
+                Log.d("UDP", "Sent data");
             } catch (SocketException e) {
                 Log.e("Udp:", "Socket Error:", e);
             } catch (IOException e) {
@@ -71,7 +78,10 @@ public class MainActivity extends AppCompatActivity {
     class ClientListen implements Runnable {
 
         String temperature;
-
+        int port;
+        ClientListen(int _port) {
+            port = _port;
+        }
         @Override
         public void run() {
             while (true) {
@@ -87,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            temperatureTV.setText(temperature);
+                            replyTV.setText(temperature);
                         }
                     });
                     Log.d("Received data", temperature);

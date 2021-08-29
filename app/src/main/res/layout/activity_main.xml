@@ -10,9 +10,25 @@
     tools:context=".MainActivity">
         <TableRow
             android:layout_gravity="center">
+            <EditText
+            android:id="@+id/server_ip"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:inputType="text"/>
+        </TableRow>
+        <TableRow
+            android:layout_gravity="center">
+            <EditText
+                android:id="@+id/server_port"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:inputType="text"/>
+        </TableRow>
+        <TableRow
+            android:layout_gravity="center">
 
             <TextView
-                android:id="@+id/temperatureTV"
+                android:id="@+id/Reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -25,16 +41,10 @@
             android:layout_gravity="center">
 
             <Button
-                android:id="@+id/checkTempBtn"
+                android:id="@+id/SendData"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Check temperature" />
-            <Button
-                android:id="@+id/turnLightBtn"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Turn light on/off" />
+                android:text="Check Temperature" />
         </TableRow>
     </TableLayout>
